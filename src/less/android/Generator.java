@@ -12,24 +12,30 @@ public class Generator extends Thread {
         return numberMap.entrySet().iterator();
     }
 
+    synchronized public boolean isReady() {
+        return isInterrupted();
+    }
+
     @Override
     public void run() {
         while (! isInterrupted()) {
+
             try {
                 Thread.sleep(1000);
-                Integer number = ThreadLocalRandom.current().nextInt(1, 99 + 1);
-                Integer currentValue = 0;
 
-                if (numberMap.containsKey(number)) {
-                    currentValue = numberMap.get(number);
-                }
-                numberMap.put(number, ++currentValue);
-                if (currentValue == 5) {
-                    interrupt();
-                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            Integer number = ThreadLocalRandom.current().nextInt(1, 99 + 1);
+            Integer currentValue = 0;
+            if (numberMap.containsKey(number)) {
+                currentValue = numberMap.get(number);
+            }
+            if (currentValue == 5) {
+                interrupt();
+            }
+            numberMap.put(number, ++currentValue);
         }
     }
 
